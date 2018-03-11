@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Platform Push Notification Demo</string>
+    <string name="title_activity_pay_bill">Pay Bill</string>
+    <string name="title_activity_bill_ready">My Bill</string>
+    <string name="label_bill_ready_due_amount">Total Amount Due</string>
+    <string name="label_bill_ready_account_id">Account No</string>
+    <string name="label_bill_ready_statement_date">Statement Date</string>
+    <string name="purchase">Pay Now</string>
+    <string name="payment_success">Your payment is successful! Thank you.</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Replace with keys from your Taplystic account -->
+    <string name="taplytics_android_sdk_key">79084317b3c0a5e8fc2ccf731a1fd433d76f0a72</string>
+    <string name="taplytics_android_url_scheme">tl-55bb6027</string>
+
+</resources>
