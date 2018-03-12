@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Icon;
@@ -19,7 +20,12 @@ import com.taplytics.sdk.TLGcmBroadcastReceiver;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 public class MyTLBroadcastReceiver extends TLGcmBroadcastReceiver {
+    public static final String ACTION_REMIND = "io.gentrack.platformnotificationdemo.ACTION_REMIND";
     public static final String ACTION_PAY_BILL = "io.gentrack.platformnotificationdemo.ACTION_PAY_BILL";
     public static final String ACTION_VIEW_BILL = "io.gentrack.platformnotificationdemo.ACTION_VIEW_BILL";
     public static final int NOTIFICATION_ID = 1010;
@@ -51,12 +57,16 @@ public class MyTLBroadcastReceiver extends TLGcmBroadcastReceiver {
         }
     }
 
-    private Notification createNotification(Context context, Intent intent, JSONObject payload) throws JSONException {
+    private Notification createNotification(Context context, Intent intent, JSONObject payload) throws JSONException, ParseException {
         final String dueAmount = payload.getString("dueAmount");
         final String dueDate = payload.getString("dueDate");
         final String accountName = payload.getString("accountName");
         final String title = String.format("Energise Ltd");
-        final String subject = String.format("%s, your monthly bill of $%s (inc. GST) is due by %s", accountName, dueAmount, dueDate);
+
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        final SimpleDateFormat weekDayFormat = new SimpleDateFormat("EEEE", Locale.ENGLISH);
+        final String subject = String.format("$%s due by %s", dueAmount, weekDayFormat.format(dateFormat.parse(dueDate)));
+
         final int requestID = (int) System.currentTimeMillis();
         final Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
@@ -70,6 +80,17 @@ public class MyTLBroadcastReceiver extends TLGcmBroadcastReceiver {
                 "Pay Now",
                 payBillPendingIntent).build();
 
+        Intent remindIntent = new Intent(context, BillReadyActivity.class);
+        remindIntent.putExtras(intent);
+        remindIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        remindIntent.setAction(MyTLBroadcastReceiver.ACTION_REMIND);
+
+        PendingIntent remindPendingIntent = PendingIntent.getActivity(context, requestID, remindIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Notification.Action remindAction = new Notification.Action.Builder(
+                Icon.createWithResource(context, R.drawable.ic_schedule_black_24dp),
+                "Remind Me",
+                remindPendingIntent).build();
+
         Intent billReadyIntent = new Intent(context, BillReadyActivity.class);
         billReadyIntent.putExtras(intent);
         billReadyIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -81,10 +102,18 @@ public class MyTLBroadcastReceiver extends TLGcmBroadcastReceiver {
                 "View Bill",
                 viewBillPendingIntent).build();
 
+        Bitmap billReadyImage = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_bill_ready);
+
+        Notification.BigPictureStyle style = new Notification.BigPictureStyle()
+                .bigPicture(billReadyImage)
+                .setSummaryText("$115.50, due this Friday")
+                .setBigContentTitle("$125.50, due this Friday");
+
+
         return new Notification.Builder(context)
                 .setContentTitle(title)
                 .setContentText(subject)
-                .setStyle(new Notification.BigTextStyle().bigText(subject))
+                .setStyle(style)
                 .setAutoCancel(true)
                 .setColor(ContextCompat.getColor(context, R.color.colorAccent))
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_app_brand))
@@ -94,6 +123,7 @@ public class MyTLBroadcastReceiver extends TLGcmBroadcastReceiver {
                 .setDefaults(Notification.DEFAULT_VIBRATE)
                 .setLights(Color.BLUE, 5000, 5000)
                 .addAction(payBillAction)
+                .addAction(remindAction)
                 .addAction(viewBillAction)
                 .build();
     }
