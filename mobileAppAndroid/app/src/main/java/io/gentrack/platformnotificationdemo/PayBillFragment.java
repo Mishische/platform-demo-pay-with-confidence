@@ -66,7 +66,7 @@ public class PayBillFragment extends Fragment implements OnCardFormSubmitListene
         if (currency == "GBP") {
             sign = "\u00a3";
         }
-        String description = String.format("<small>Due Amount: </small>%s<b>%s</b>", sign, dueAmount);
+        String description = String.format("<small>Due :</small>%s<b>%s</b>", sign, dueAmount);
         dueAmountText.setText(Html.fromHtml(description, Html.FROM_HTML_MODE_LEGACY));
         return view;
     }

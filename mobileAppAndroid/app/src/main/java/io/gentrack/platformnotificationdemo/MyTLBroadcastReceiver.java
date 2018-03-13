@@ -22,6 +22,8 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 public class MyTLBroadcastReceiver extends TLGcmBroadcastReceiver {
@@ -59,26 +61,35 @@ public class MyTLBroadcastReceiver extends TLGcmBroadcastReceiver {
 
     private Notification createNotification(Context context, Intent intent, JSONObject payload) throws JSONException, ParseException {
         final String dueAmount = payload.getString("dueAmount");
-        final String dueDate = payload.getString("dueDate");
+
         final String accountName = payload.getString("accountName");
         final String title = String.format("Energise Ltd");
 
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         final SimpleDateFormat weekDayFormat = new SimpleDateFormat("EEEE", Locale.ENGLISH);
-        final String subject = String.format("$%s due by %s", dueAmount, weekDayFormat.format(dateFormat.parse(dueDate)));
+
+        final Date dueDate = dateFormat.parse(payload.getString("dueDate"));
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dueDate);
+        cal.add(Calendar.DATE, -1);
+        final Date remindMeDate = cal.getTime();
+        final String subject = String.format("$%s due by %s", dueAmount, weekDayFormat.format(dueDate));
+        final String remindMeLabel = String.format("Remind me on %s", weekDayFormat.format(remindMeDate));
 
         final int requestID = (int) System.currentTimeMillis();
         final Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-        Intent payBillIntent = new Intent(context, PayBillActivity.class);
-        payBillIntent.putExtras(intent);
-        payBillIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        payBillIntent.setAction(MyTLBroadcastReceiver.ACTION_VIEW_BILL);
-        PendingIntent payBillPendingIntent = PendingIntent.getActivity(context, requestID, payBillIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        //http://code.hootsuite.com/custom-notifications-for-android/
+
+        Intent payIntent = new Intent(context, PayBillActivity.class);
+        payIntent.putExtras(intent);
+        payIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        payIntent.setAction(MyTLBroadcastReceiver.ACTION_VIEW_BILL);
+        PendingIntent payPendingIntent = PendingIntent.getActivity(context, requestID, payIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         Notification.Action payBillAction = new Notification.Action.Builder(
                 Icon.createWithResource(context, R.drawable.ic_assignment_black_24dp),
                 "Pay Now",
-                payBillPendingIntent).build();
+                payPendingIntent).build();
 
         Intent remindIntent = new Intent(context, RemindMeActivity.class);
         remindIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -87,19 +98,19 @@ public class MyTLBroadcastReceiver extends TLGcmBroadcastReceiver {
         PendingIntent remindPendingIntent = PendingIntent.getActivity(context, requestID, remindIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         Notification.Action remindAction = new Notification.Action.Builder(
                 Icon.createWithResource(context, R.drawable.ic_schedule_black_24dp),
-                "Remind Me Later",
+                remindMeLabel,
                 remindPendingIntent).build();
 
-        Intent billReadyIntent = new Intent(context, BillReadyActivity.class);
-        billReadyIntent.putExtras(intent);
-        billReadyIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        billReadyIntent.setAction(MyTLBroadcastReceiver.ACTION_PAY_BILL);
+        Intent viewIntent = new Intent(context, BillReadyActivity.class);
+        viewIntent.putExtras(intent);
+        viewIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        viewIntent.setAction(MyTLBroadcastReceiver.ACTION_PAY_BILL);
 
-        PendingIntent viewBillPendingIntent = PendingIntent.getActivity(context, requestID, billReadyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent viewPendingIntent = PendingIntent.getActivity(context, requestID, viewIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         Notification.Action viewBillAction = new Notification.Action.Builder(
                 Icon.createWithResource(context, R.drawable.ic_payment_black_24dp),
-                "View Bill",
-                viewBillPendingIntent).build();
+                "More Details",
+                viewPendingIntent).build();
 
         Bitmap billReadyImage = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_bill_ready);
 
@@ -111,8 +122,8 @@ public class MyTLBroadcastReceiver extends TLGcmBroadcastReceiver {
                 .setStyle(style)
                 .setAutoCancel(true)
                 .setColor(ContextCompat.getColor(context, R.color.colorAccent))
-                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_notification_large))
-                .setSmallIcon(R.drawable.ic_notification_small_g)
+                //.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_notification_large))
+                .setSmallIcon(R.drawable.ic_notification_small)
                 .setSound(notificationSound)
                 .setPriority(Notification.PRIORITY_MAX)
                 .setDefaults(Notification.DEFAULT_VIBRATE)
