@@ -1,7 +1,8 @@
 <resources>
-    <string name="app_name">Platform Push Notification Demo</string>
+    <string name="app_name">Pay with Confidence</string>
     <string name="title_activity_pay_bill">Pay Bill</string>
     <string name="title_activity_bill_ready">My Bill</string>
+    <string name="title_activity_remind_me">Remind Me</string>
     <string name="label_bill_ready_due_amount">Total Amount Due</string>
     <string name="label_bill_ready_account_id">Account No</string>
     <string name="label_bill_ready_statement_date">Statement Date</string>

@@ -1,5 +1,6 @@
 package io.gentrack.platformnotificationdemo;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Display;
 import android.view.View;
@@ -23,15 +25,6 @@ public class MainActivity extends AppCompatActivity {
 
         ImageView background = findViewById(R.id.main_background);
         background.setImageBitmap(createFullScreenBackgroundImage());
-
-        FloatingActionButton myFab = this.findViewById(R.id.fab);
-        myFab.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, BillReadyActivity.class);
-                intent.putExtra("accountId", "1123456");
-                startActivity(intent);
-            }
-        });
     }
 
     private Bitmap createFullScreenBackgroundImage() {
@@ -64,5 +57,21 @@ public class MainActivity extends AppCompatActivity {
         canvas.drawBitmap(originalImage, transformation, paint);
 
         return scaledImage;
+    }
+
+
+    private void showRemindMe(String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(message);
+        builder.setCancelable(true);
+        builder.setPositiveButton(
+                "Done",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog remindMe = builder.create();
+        remindMe.show();
     }
 }

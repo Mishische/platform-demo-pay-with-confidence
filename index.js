@@ -83,6 +83,7 @@ app.post('/webhook', (req, res) => {
         recentConsumptions.push(Math.random() * 80 + 80);
     }
     const customData = Object.assign({
+        'tl_silent': true,
         'tl_priority': 1,
         'tl_title': 'Energise Ltd',
         recentConsumptions: recentConsumptions

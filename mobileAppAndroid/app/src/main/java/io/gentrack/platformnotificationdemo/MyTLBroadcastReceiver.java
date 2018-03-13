@@ -80,15 +80,14 @@ public class MyTLBroadcastReceiver extends TLGcmBroadcastReceiver {
                 "Pay Now",
                 payBillPendingIntent).build();
 
-        Intent remindIntent = new Intent(context, BillReadyActivity.class);
-        remindIntent.putExtras(intent);
+        Intent remindIntent = new Intent(context, RemindMeActivity.class);
         remindIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         remindIntent.setAction(MyTLBroadcastReceiver.ACTION_REMIND);
 
         PendingIntent remindPendingIntent = PendingIntent.getActivity(context, requestID, remindIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         Notification.Action remindAction = new Notification.Action.Builder(
                 Icon.createWithResource(context, R.drawable.ic_schedule_black_24dp),
-                "Remind Me",
+                "Remind Me Later",
                 remindPendingIntent).build();
 
         Intent billReadyIntent = new Intent(context, BillReadyActivity.class);
@@ -106,17 +105,13 @@ public class MyTLBroadcastReceiver extends TLGcmBroadcastReceiver {
 
         Notification.BigPictureStyle style = new Notification.BigPictureStyle()
                 .bigPicture(billReadyImage)
-                .setSummaryText("$115.50, due this Friday")
-                .setBigContentTitle("$125.50, due this Friday");
-
+                .setBigContentTitle(subject);
 
         return new Notification.Builder(context)
-                .setContentTitle(title)
-                .setContentText(subject)
                 .setStyle(style)
                 .setAutoCancel(true)
                 .setColor(ContextCompat.getColor(context, R.color.colorAccent))
-                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_app_brand))
+                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_notification_large))
                 .setSmallIcon(R.drawable.ic_notification_small_g)
                 .setSound(notificationSound)
                 .setPriority(Notification.PRIORITY_MAX)
