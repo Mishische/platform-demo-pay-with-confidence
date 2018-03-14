@@ -55,7 +55,8 @@
             android:name=".PayBillActivity"
             android:label="@string/title_activity_pay_bill"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".RemindMeActivity"
+        <activity
+            android:name=".RemindMeActivity"
             android:label="@string/title_activity_remind_me"
             android:theme="@style/AppTheme.Dialog" />
     </application>

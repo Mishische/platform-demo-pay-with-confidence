@@ -8,11 +8,17 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Icon;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -59,10 +65,10 @@ public class MyTLBroadcastReceiver extends TLGcmBroadcastReceiver {
             Toast.makeText(context, "Failed to notify: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
+
     private Notification createNotification(Context context, Intent intent, JSONObject payload) throws JSONException, ParseException {
         final String dueAmount = payload.getString("dueAmount");
         final String accountName = payload.getString("accountName");
-        final String title = String.format("Energise Ltd");
 
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         final SimpleDateFormat weekDayFormat = new SimpleDateFormat("EEEE", Locale.ENGLISH);
@@ -71,12 +77,32 @@ public class MyTLBroadcastReceiver extends TLGcmBroadcastReceiver {
         Calendar cal = Calendar.getInstance();
         cal.setTime(dueDate);
         cal.add(Calendar.DATE, -1);
-        final Date remindMeDate = cal.getTime();
-        final String subject = String.format("$%s due by %s", dueAmount, weekDayFormat.format(dueDate));
-        final String remindMeLabel = String.format("Remind me on\n%s", weekDayFormat.format(remindMeDate));
+        final Date remindDate = cal.getTime();
+
+        final String dueDay = weekDayFormat.format(dueDate);
+        final String remindDay = weekDayFormat.format(remindDate);
+        final String dueBy = " due by ";
+
+        SpannableStringBuilder subjectSpans = new SpannableStringBuilder();
+        SpannableString amountSpan = new SpannableString(dueAmount);
+        amountSpan.setSpan(new RelativeSizeSpan(1.5f), 0, dueAmount.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        SpannableString dueBySpan = new SpannableString(dueBy);
+        dueBySpan.setSpan(new StyleSpan(Typeface.ITALIC), 0, dueBy.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        SpannableString daySpan = new SpannableString(dueDay);
+        daySpan.setSpan(new RelativeSizeSpan(1.5f), 0, dueDay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        subjectSpans.append("$");
+        subjectSpans.append(amountSpan);
+        subjectSpans.append(dueBySpan);
+        subjectSpans.append(daySpan);
+
+        SpannableStringBuilder remindLabelSpans = new SpannableStringBuilder();
+        SpannableString remindDaySpan = new SpannableString(remindDay);
+        remindDaySpan.setSpan(new StyleSpan(Typeface.ITALIC), 0, remindDay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        remindLabelSpans.append("Remind me on\n");
+        remindLabelSpans.append(remindDaySpan);
 
         final int requestID = (int) System.currentTimeMillis();
-        final Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        final Uri sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         Intent payIntent = new Intent(context, PayBillActivity.class);
         payIntent.putExtras(intent);
@@ -97,17 +123,16 @@ public class MyTLBroadcastReceiver extends TLGcmBroadcastReceiver {
 
 
         RemoteViews customViewBig = new RemoteViews(context.getPackageName(), R.layout.view_notification_big);
-        customViewBig.setTextViewText(R.id.notification_subject, subject);
-        customViewBig.setTextViewText(R.id.remind_button, remindMeLabel);
+        customViewBig.setTextViewText(R.id.notification_subject, subjectSpans);
+        customViewBig.setTextViewText(R.id.remind_button, remindLabelSpans);
 
         customViewBig.setOnClickPendingIntent(R.id.pay_button, payPendingIntent);
         customViewBig.setOnClickPendingIntent(R.id.remind_button, remindPendingIntent);
         customViewBig.setOnClickPendingIntent(R.id.view_button, viewPendingIntent);
 
-
         RemoteViews customViewSmall = new RemoteViews(context.getPackageName(), R.layout.view_notification_small);
-        customViewSmall.setTextViewText(R.id.notification_subject, subject);
-        customViewSmall.setTextViewText(R.id.remind_button, remindMeLabel);
+        customViewSmall.setTextViewText(R.id.notification_subject, subjectSpans);
+        customViewSmall.setTextViewText(R.id.remind_button, remindLabelSpans);
 
         customViewSmall.setOnClickPendingIntent(R.id.pay_button, payPendingIntent);
         customViewSmall.setOnClickPendingIntent(R.id.remind_button, remindPendingIntent);
@@ -118,7 +143,7 @@ public class MyTLBroadcastReceiver extends TLGcmBroadcastReceiver {
                 .setColor(ContextCompat.getColor(context, R.color.colorAccent))
                 //.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_notification_large))
                 .setSmallIcon(R.drawable.ic_notification_small)
-                .setSound(notificationSound)
+                .setSound(sound)
                 .setPriority(Notification.PRIORITY_MAX)
                 .setDefaults(Notification.DEFAULT_VIBRATE)
                 .setLights(Color.BLUE, 5000, 5000)
@@ -132,7 +157,6 @@ public class MyTLBroadcastReceiver extends TLGcmBroadcastReceiver {
         final String dueAmount = payload.getString("dueAmount");
 
         final String accountName = payload.getString("accountName");
-        final String title = String.format("Energise Ltd");
 
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         final SimpleDateFormat weekDayFormat = new SimpleDateFormat("EEEE", Locale.ENGLISH);

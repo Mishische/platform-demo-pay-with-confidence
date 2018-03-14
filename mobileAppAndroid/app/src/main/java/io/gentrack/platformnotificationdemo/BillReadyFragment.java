@@ -1,8 +1,13 @@
 package io.gentrack.platformnotificationdemo;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,8 +41,7 @@ import java.util.Date;
 public class BillReadyFragment extends Fragment {
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_bill_ready, container, false);
         try {
             JSONObject payload = getPayload();
@@ -56,19 +60,41 @@ public class BillReadyFragment extends Fragment {
     }
 
     private void updateDetails(View view, JSONObject payload) throws JSONException {
-        TextView accountIDText =  view.findViewById(R.id.bill_ready_details_account_id);
+        TextView accountIDText = view.findViewById(R.id.bill_ready_details_account_id);
         String accountId = payload.getString("accountId");
-        accountIDText.setText(String.format("Account No: %s", accountId));
+        accountIDText.setText(String.format("Account %s", accountId));
 
-        TextView dueAmount =  view.findViewById(R.id.bill_ready_due_amount);
-        dueAmount.setText("$" + payload.getString("dueAmount"));
+        String currency = "NZD";
+        try {
+            currency = payload.getString("currency");
+        } catch (Exception e) {
+        }
+        final String sign = (currency == "GBP") ? "\u00a3" : "$";
+        final String dueAmount = payload.getString("dueAmount");
+        final String dueDate = payload.getString("dueDate");
+        final String dueBy = "Due by ";
 
-        String dueDate = payload.getString("dueDate");
-        String accountName = payload.getString("accountName");
-        String description = String.format("Due by <b>%s</b>", dueDate);
+        SpannableStringBuilder dueAmountTextSpans = new SpannableStringBuilder();
+        SpannableString signSpan = new SpannableString(sign);
+        signSpan.setSpan(new RelativeSizeSpan(0.33f), 0, sign.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        SpannableString amountSpan = new SpannableString(dueAmount);
+        amountSpan.setSpan(new StyleSpan(Typeface.BOLD), 0, dueAmount.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        dueAmountTextSpans.append(signSpan);
+        dueAmountTextSpans.append(amountSpan);
 
-        TextView descriptionText =  view.findViewById(R.id.bill_ready_due_date);
-        descriptionText.setText(Html.fromHtml(description, Html.FROM_HTML_MODE_LEGACY));
+        TextView dueAmountText = view.findViewById(R.id.bill_ready_due_amount);
+        dueAmountText.setText(dueAmountTextSpans);
+
+        SpannableStringBuilder dueDateTextSpans = new SpannableStringBuilder();
+        SpannableString dueBySpan = new SpannableString(dueBy);
+        dueBySpan.setSpan(new StyleSpan(Typeface.ITALIC), 0, dueBy.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        SpannableString dueDateSpan = new SpannableString(dueDate);
+        dueDateSpan.setSpan(new RelativeSizeSpan(1.5f), 0, dueDate.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        dueDateTextSpans.append(dueBySpan);
+        dueDateTextSpans.append(dueDateSpan);
+
+        TextView dueDateText = view.findViewById(R.id.bill_ready_due_date);
+        dueDateText.setText(dueDateTextSpans);
     }
 
     private void updateConsumptionChart(View view, JSONObject payload) throws JSONException, ParseException {

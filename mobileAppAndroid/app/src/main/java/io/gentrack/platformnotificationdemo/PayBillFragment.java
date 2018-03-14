@@ -2,9 +2,14 @@ package io.gentrack.platformnotificationdemo;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,22 +37,8 @@ public class PayBillFragment extends Fragment implements OnCardFormSubmitListene
     private SupportedCardTypesView mSupportedCardTypesView;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_pay_bill, container, false);
-        String dueAmount = "100";
-        String currency = "NZD";
-        try {
-            JSONObject payload = getPayload();
-            dueAmount = payload.getString("dueAmount");
-            currency = payload.getString("currency");
-            if (currency.isEmpty()) {
-                currency = "NZD";
-            }
-        } catch (Exception e) {
-            Toast.makeText(getActivity(), "Failed to get payload: " + e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-
         mSupportedCardTypesView = view.findViewById(R.id.pay_bill_supported_card_types);
         mSupportedCardTypesView.setSupportedCardTypes(SUPPORTED_CARD_TYPES);
 
@@ -60,14 +51,29 @@ public class PayBillFragment extends Fragment implements OnCardFormSubmitListene
         mCardForm.setOnCardFormSubmitListener(this);
         mCardForm.setOnCardTypeChangedListener(this);
 
-        TextView dueAmountText = view.findViewById(R.id.pay_bill_due_amount);
-
-        String sign = "$";
-        if (currency == "GBP") {
-            sign = "\u00a3";
+        String dueAmount = "100";
+        String currency = "NZD";
+        try {
+            JSONObject payload = getPayload();
+            dueAmount = payload.getString("dueAmount");
+            currency = payload.getString("currency");
+            if (currency.isEmpty()) {
+                currency = "NZD";
+            }
+        } catch (Exception e) {
+            Toast.makeText(getActivity(), "Failed to get payload: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
-        String description = String.format("<small>Due :</small>%s<b>%s</b>", sign, dueAmount);
-        dueAmountText.setText(Html.fromHtml(description, Html.FROM_HTML_MODE_LEGACY));
+        final String sign = (currency == "GBP") ? "\u00a3" : "$";
+        SpannableStringBuilder dueAmountTextSpans = new SpannableStringBuilder();
+        SpannableString signSpan = new SpannableString(sign);
+        signSpan.setSpan(new RelativeSizeSpan(0.33f), 0, sign.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        SpannableString amountSpan = new SpannableString(dueAmount);
+        amountSpan.setSpan(new StyleSpan(Typeface.BOLD), 0, dueAmount.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        dueAmountTextSpans.append(signSpan);
+        dueAmountTextSpans.append(amountSpan);
+
+        TextView dueAmountText = view.findViewById(R.id.pay_bill_due_amount);
+        dueAmountText.setText(dueAmountTextSpans);
         return view;
     }
 
