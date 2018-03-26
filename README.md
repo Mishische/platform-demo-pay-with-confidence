@@ -42,10 +42,10 @@ To be able to send push notifications, we need to create a Taplytics App.
 ```
 ....
 # Android SDK key
-Taplytics.startTaplytics(this, "**6e9baefa4c41c429f327887f2401a43a48e372ce**");
+Taplytics.startTaplytics(this, "6e9baefa4c41c429f327887f2401a43a48e372ce");
 ...
 # Android URL scheme
-<data android:scheme="**tl-06ba23aa**"/>
+<data android:scheme="tl-06ba23aa"/>
 ...
 ```
 You will need to provide those to the Android application we will build as a next step.
@@ -62,7 +62,7 @@ You will need to provide those to the Android application we will build as a nex
 ## Create Android Emulator
 
 To be able to run the Android application, we need an Android emulator to be created first.
-1. In __Android Studio__, on the toolbar click **AVD Manager** icon 
+1. In __Android Studio__, on the toolbar click the **AVD Manager** icon 
 2. In the __Android Virtual Device Manager__, click the button **+ Create Virtual Device…** 
 3. In the __Virtual Device Configuration__ wizard, choose the Category **Phone** and Name **Pixel 2**, then click **Next**
 4. Select **Nougat**, then click **Next**
@@ -85,7 +85,7 @@ The Android application will connect to Taplytics, allowing it to finish SDK int
 5. On the Firebase left side bar, click the **Settings** icon and select **Project settings**
 6. On the __Cloud Messaging__ page, click the button **Add Server Key**. You will need to provide **Server ID** and two **Server key tokens** to __Google Cloud Messaging__ in Taplytics
 7. On the Taplytics __Dashboard__ page, click **Settings**
-8. On the _Settings__ page, copy **Taplytics REST API Private Key** - save it for later
+8. On the __Settings__ page, copy **Taplytics REST API Private Key** - save it for later
 9. On the __Settings__ page, select **Push Notification Settings**
 10. On the __Production GCM Credentials__ under __Google Cloud Messaging__ Section, populate the following values then click **Save Credentials**
    * SENDER ID - Sender ID you obtained on the step 6
@@ -106,6 +106,7 @@ Before you deploy the integration, you will need the public key of your Gentrack
 
 It is time to deploy the integration. This will setup an app in Heroku to connect Taplytics and Gentrack Platform.
 1. Click the **Deploy to Heroku** button to create a new instance of this sample integration:
+
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/gentrack/platform-demo-pay-with-confidence)
 2. On the __Create New App__, populate the following values, then click **Deploy app**
     * App name - provide a value, or leave it blank to let Heroku generate a value
