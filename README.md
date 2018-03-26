@@ -107,7 +107,7 @@ Before you deploy the integration, you will need the public key of your Gentrack
 It is time to deploy the integration. This will setup an app in Heroku to connect Taplytics and Gentrack Platform.
 1. Click the **Deploy to Heroku** button to create a new instance of this sample integration:
 
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/gentrack/platform-demo-pay-with-confidence)
+    [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/gentrack/platform-demo-pay-with-confidence)
 
 2. On the __Create New App__, populate the following values, then click **Deploy app**
     * App name - provide a value, or leave it blank to let Heroku generate a value
