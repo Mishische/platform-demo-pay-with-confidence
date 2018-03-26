@@ -102,7 +102,7 @@ public class BillReadyFragment extends Fragment {
         Date balanceDate = df.parse(payload.getString("balanceDate"));
         JSONArray recentConsumptions = payload.getJSONArray("recentConsumptions");
         float range = 0;
-        ArrayList<BarEntry> entries = new ArrayList<BarEntry>();
+        ArrayList <BarEntry> entries = new ArrayList <BarEntry>();
         for (int i = 0; i < recentConsumptions.length(); ++i) {
             String item = recentConsumptions.getString(i);
             float val = Float.parseFloat(item);
@@ -149,7 +149,7 @@ public class BillReadyFragment extends Fragment {
         } else {
             dataSet = new BarDataSet(entries, "Electricity Monthly Consumption History");
             dataSet.setDrawIcons(false);
-            ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
+            ArrayList <IBarDataSet> dataSets = new ArrayList <IBarDataSet>();
             dataSets.add(dataSet);
             BarData data = new BarData(dataSets);
             data.setValueTextSize(20f);

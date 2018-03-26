@@ -8,8 +8,7 @@
         android:id="@+id/notification_subject"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/default_margin"
-        android:layout_marginTop="@dimen/default_margin"
+        android:layout_marginBottom="@dimen/large_margin"
         android:text="Subject"
         android:textSize="10sp"
         android:textStyle="bold" />
@@ -51,7 +50,7 @@
             android:layout_weight="1"
             android:background="@color/colorPrimary"
             android:gravity="center"
-            android:text="View&#10;Details"
+            android:text="More&#10;Details"
             android:textAppearance="@style/TextAppearance.AppCompat.Widget.Button"
             android:textColor="@color/white" />
     </LinearLayout>

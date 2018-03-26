@@ -11,7 +11,7 @@
     tools:context="io.gentrack.platformnotificationdemo.RemindMeActivity">
 
     <TextView
-        android:id="@+id/text_remind_me"
+        android:id="@+id/remind_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="OK, I will remind you again on Thursday."

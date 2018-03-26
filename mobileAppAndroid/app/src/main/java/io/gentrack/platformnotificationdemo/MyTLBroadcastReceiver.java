@@ -5,11 +5,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.Icon;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -42,9 +39,6 @@ public class MyTLBroadcastReceiver extends TLGcmBroadcastReceiver {
     @Override
     public void pushOpened(Context context, Intent intent) {
         //A user clicked on the notification!
-        Intent billReadyIntent = new Intent(context, BillReadyActivity.class);
-        billReadyIntent.putExtras(intent);
-        context.startActivity(billReadyIntent);
     }
 
     @Override
@@ -111,6 +105,7 @@ public class MyTLBroadcastReceiver extends TLGcmBroadcastReceiver {
         PendingIntent payPendingIntent = PendingIntent.getActivity(context, requestID, payIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent remindIntent = new Intent(context, RemindMeActivity.class);
+        remindIntent.putExtra("remindDay", remindDay);
         remindIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         remindIntent.setAction(MyTLBroadcastReceiver.ACTION_REMIND);
         PendingIntent remindPendingIntent = PendingIntent.getActivity(context, requestID, remindIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -150,79 +145,6 @@ public class MyTLBroadcastReceiver extends TLGcmBroadcastReceiver {
                 .setCustomContentView(customViewSmall)
                 .setCustomBigContentView(customViewBig)
                 .setStyle(new Notification.DecoratedCustomViewStyle())
-                .build();
-    }
-
-    private Notification createNotification2(Context context, Intent intent, JSONObject payload) throws JSONException, ParseException {
-        final String dueAmount = payload.getString("dueAmount");
-
-        final String accountName = payload.getString("accountName");
-
-        final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        final SimpleDateFormat weekDayFormat = new SimpleDateFormat("EEEE", Locale.ENGLISH);
-
-        final Date dueDate = dateFormat.parse(payload.getString("dueDate"));
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(dueDate);
-        cal.add(Calendar.DATE, -1);
-        final Date remindMeDate = cal.getTime();
-        final String subject = String.format("$%s due by %s", dueAmount, weekDayFormat.format(dueDate));
-        final String remindMeLabel = String.format("Remind me on %s", weekDayFormat.format(remindMeDate));
-
-        final int requestID = (int) System.currentTimeMillis();
-        final Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-
-        Intent payIntent = new Intent(context, PayBillActivity.class);
-        payIntent.putExtras(intent);
-        payIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        payIntent.setAction(MyTLBroadcastReceiver.ACTION_PAY_BILL);
-        PendingIntent payPendingIntent = PendingIntent.getActivity(context, requestID, payIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Intent remindIntent = new Intent(context, RemindMeActivity.class);
-        remindIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        remindIntent.setAction(MyTLBroadcastReceiver.ACTION_REMIND);
-        PendingIntent remindPendingIntent = PendingIntent.getActivity(context, requestID, remindIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Intent viewIntent = new Intent(context, BillReadyActivity.class);
-        viewIntent.putExtras(intent);
-        viewIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        viewIntent.setAction(MyTLBroadcastReceiver.ACTION_VIEW_BILL);
-        PendingIntent viewPendingIntent = PendingIntent.getActivity(context, requestID, viewIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Notification.Action payBillAction = new Notification.Action.Builder(
-                Icon.createWithResource(context, R.drawable.ic_assignment_black_24dp),
-                "Pay Now",
-                payPendingIntent).build();
-
-        Notification.Action remindAction = new Notification.Action.Builder(
-                Icon.createWithResource(context, R.drawable.ic_schedule_black_24dp),
-                remindMeLabel,
-                remindPendingIntent).build();
-
-        Notification.Action viewBillAction = new Notification.Action.Builder(
-                Icon.createWithResource(context, R.drawable.ic_payment_black_24dp),
-                "More Details",
-                viewPendingIntent).build();
-
-        Bitmap billReadyImage = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_bill_ready);
-
-        Notification.BigPictureStyle style = new Notification.BigPictureStyle()
-                .bigPicture(billReadyImage)
-                .setBigContentTitle(subject);
-
-        return new Notification.Builder(context)
-                .setStyle(style)
-                .setAutoCancel(true)
-                .setColor(ContextCompat.getColor(context, R.color.colorAccent))
-                //.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_notification_large))
-                .setSmallIcon(R.drawable.ic_notification_small)
-                .setSound(notificationSound)
-                .setPriority(Notification.PRIORITY_MAX)
-                .setDefaults(Notification.DEFAULT_VIBRATE)
-                .setLights(Color.BLUE, 5000, 5000)
-                .addAction(payBillAction)
-                .addAction(remindAction)
-                .addAction(viewBillAction)
                 .build();
     }
 }
