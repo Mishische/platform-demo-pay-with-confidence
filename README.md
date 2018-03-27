@@ -1,21 +1,20 @@
 # Pay with Confidence
 
-Getting parted with the money is always a very sensitive topic, even if this is just another electricity bill. Although, automatic bill payment plans make your customers’ life easier ensuring them that bills are paid on time and in full each month, not everyone feels comfortable with funds withdrawals made without any control on their side. This is where manual payments bubble up. Totally controlled by customer, they require just a bit of customer’s attention once the latter got notified that the bill was ready. In this demo, we show how you can use rich push notification from your mobile application to let your customer make well-informed payment decision and pay their bill with confidence in one click, keeping things under control.
+Getting parted with money is always a very sensitive subject, even if this is just another electricity bill. Although automatic bill payment plans make your customers’ life easier ensuring them that bills are paid on time and in full each month, not everyone feels comfortable with funds being withdrawn without any control on their side. This is where manual payments come on the stage. Totally controlled by customer, they require just a bit of customer’s attention once the latter gets notified that the bill was ready. In this demo, we show how you can use rich push notification from your mobile application to let your customer make well-informed payment decision and pay their bill with confidence in one click, keeping things under control.
 
 ![Sample Rich Push Notification](rich-push.png)
 
-Rich push notifications are essentially push notifications that support rich media attachments such as images, videos, audio, and interactive buttons. Therefore, rich push notifications expand your arsenal of creating meaningful connections with your customers using a mobile app. Advanced notifications help to convey meaning with images, further improving your overall engagement strategy.
+Rich push notifications are called so as they support rich media attachments such as images, videos, audio, and interactive buttons. Rich push notifications expand your arsenal of creating meaningful connections with your customers using a mobile app. Advanced notifications help to convey meaning with images, further improving your overall engagement strategy. As an implementation tool, we use Taplytics. Being an engagement platform, Taplytics engage and deliver a personalised 1-to-1 mobile customer experience. It provides A/B testing capabilities and measures the impact notifications have on app engagement.
 
-In this demo we connect the Gentrack Platform to an integration layer, represented by Heroku. This layer extracts a bit of extra data that might typically reside in a CRM, and sends the combined set to Taplytics to trigger the automation pathway. The process flows as follows:
+In this demo we connect the Gentrack Platform to an integration layer, represented by Heroku. This layer sends the data to Taplytics to trigger customer engagement. The process flows as follows:
 
 ![Flow](flow.png)
 
 1. A bill is generated for a customer in a Gentrack core system.
 2. The core system triggers and publishes an event to the Gentrack Platform.
-3. The Gentrack Platform then sends the event to a registered webhook – a NodeJS/Express application that receives bill events from the Platform and then pushes notifications to registered devices using Taplytics APIs.
-4. The webhook sends a rich push notification to a utility customer's mobile device.
+3. The Gentrack Platform then sends the event to a registered webhook – a Heroku application that receives bill events from the Platform and then pushes notifications to registered devices using Taplytics APIs.
 
-As you think about your production deployment you might choose other methods for integration (e.g. event bus, workflow-based integration layer, etc...). Our sample integration layer also hosts a simple data set that might be obtained from a customer relationship management (CRM) system. You will also want to consider how to secure secrets, such as API keys, in your integration layer.
+As you think about your production deployment you might choose other methods for integration (e.g. event bus, workflow-based integration layer, etc...). You will also want to consider how to secure secrets, such as API keys, in your integration layer.
 
 ## Before you begin
 
@@ -29,7 +28,6 @@ You will need to have:
 * [Heroku](https://www.heroku.com/) Account
 * [Android Studio 3.x](https://developer.android.com/studio/index.html)
 * Android SDK and Platform Tools version 27 for building the Android application. Refer to the [Android Studio user guide](https://developer.android.com/studio/intro/update.html) on installing and updating Android SDK and Platform tools
-* An Android emulator to run the Android application. The emulator must use an image with `API level = 24` and `Target = Android 7.0 (Google APIs)`. Do not worry about the emulator now – you will find a step-by-step guide how to create the emulator with such requirements below - when we need it for the Demo.
 
 ## Create a Taplytics App
 To be able to send push notifications, we need to create a Taplytics App.
@@ -52,16 +50,17 @@ You will need to provide those to the Android application we will build as a nex
 
 ## Build Android Application
 
-1. Click the button **Clone or download** at the top of this page and save the demo project to a local directory.
-2. Launch __Android Studio__, then choose **Open an Existing Android Studio Project** in the dialog opened. 
-3. In the dialog, navigate to the directory you have saved the project to, and open the directory **mobileAppAndroid** in the project.
-4. In Android Studio, open ‘mobileAppAndroid\app\src\main\res\values\strings.xml’
-5. At the bottom of __strings.xml__, update `taplytics_android_sdk_key` and `taplytics_android_sdk_key` with the key definitions of your Taplytics application, obtained earlier.
-6. Build the application.
+1. Launch __Android Studio__, then choose **GitHub** under __Check out project from Version Control__ in the dialog opened
+2. In the dialog, log in to GitHub
+3. To clone Repository, specify Git Repository URL as well as select Parent Directory and Directory Name for the project to be cloned to, then click **Clone**
+4. Create an Android Studio project following the dialog
+5. In Android Studio, open ‘mobileAppAndroid\app\src\main\res\values\strings.xml’
+6. At the bottom of __strings.xml__, update `taplytics_android_sdk_key` and `taplytics_android_sdk_key` with the key definitions of your Taplytics application, obtained earlier.
+7. Build the application.
 
 ## Create Android Emulator
 
-To be able to run the Android application, we need an Android emulator to be created first.
+To be able to run the Android application, we need an Android emulator to be created first. The emulator must use an image with `API level = 24` and `Target = Android 7.0 (Google APIs)`. 
 1. In __Android Studio__, on the toolbar click the **AVD Manager** icon 
 2. In the __Android Virtual Device Manager__, click the button **+ Create Virtual Device…** 
 3. In the __Virtual Device Configuration__ wizard, choose the Category **Phone** and Name **Pixel 2**, then click **Next**
@@ -113,7 +112,7 @@ It is time to deploy the integration. This will setup an app in Heroku to connec
     * App name - provide a value, or leave it blank to let Heroku generate a value
     * Region - chooses a region that suits you
     * PUBLIC_KEY – paste the Platform public key you obtained earlier
-    * TAPLYTICS_API_TOKEN – paste the Taplytics REST API Private Key you obtained earlier
+    * TAPLYTICS_API_TOKEN – paste the Taplytics REST API Private Key you obtained on the step 8
     
 Once the application is deployed, you will be able to access the integration console at `https://(your-app-name).herokuapp.com/admin`.
 
