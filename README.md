@@ -4,7 +4,7 @@ Getting parted with money is always a very sensitive subject, even if this is ju
 
 ![Sample Rich Push Notification](rich-push.png)
 
-Rich push notifications are called so as they support rich media attachments such as images, videos, audio, and interactive buttons. Rich push notifications expand your arsenal of creating meaningful connections with your customers using a mobile app. Advanced notifications help to convey meaning with images, further improving your overall engagement strategy. As an implementation tool, we use Taplytics. Being an engagement platform, Taplytics engage and deliver a personalised 1-to-1 mobile customer experience. It provides A/B testing capabilities and measures the impact notifications have on app engagement.
+Rich push notifications are called so as they support rich media attachments such as images, videos, audio, and interactive buttons. Rich push notifications expand your arsenal of creating meaningful connections with your customers using a mobile app. Advanced notifications help to convey meaning with images, further improving your overall engagement strategy. As an implementation tool, we use Taplytics. Being an engagement platform, Taplytics engages and delivers a personalised 1-to-1 mobile customer experience. It provides A/B testing capabilities and measures the impact notifications have on app engagement.
 
 In this demo we connect the Gentrack Platform to an integration layer, represented by Heroku. This layer sends the data to Taplytics to trigger customer engagement. The process flows as follows:
 
@@ -60,7 +60,7 @@ You will need to provide those to the Android application we will build as a nex
 
 ## Create Android Emulator
 
-To be able to run the Android application, we need an Android emulator to be created first. The emulator must use an image with `API level = 24` and `Target = Android 7.0 (Google APIs)`. 
+To be able to run the Android application, we need an Android emulator to be created first. The emulator must use an image with `API level = 24` and `Target = Android 7.0 (Google APIs)`.
 1. In __Android Studio__, on the toolbar click the **AVD Manager** icon 
 2. In the __Android Virtual Device Manager__, click the button **+ Create Virtual Device…** 
 3. In the __Virtual Device Configuration__ wizard, choose the Category **Phone** and Name **Pixel 2**, then click **Next**
