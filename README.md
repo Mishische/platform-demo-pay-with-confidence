@@ -112,9 +112,7 @@ It is time to deploy the integration. This will setup an app in Heroku to connec
     * App name - provide a value, or leave it blank to let Heroku generate a value
     * Region - chooses a region that suits you
     * PUBLIC_KEY – paste the Platform public key you obtained earlier
-    * TAPLYTICS_API_TOKEN – paste the Taplytics REST API Private Key you obtained on the step 8
-    
-Once the application is deployed, you will be able to access the integration console at `https://(your-app-name).herokuapp.com/admin`.
+    * TAPLYTICS_API_TOKEN – paste the Taplytics REST API Private Key you obtained on the step 8.
 
 ## Subscribe to the bill-ready event and send a test event
 
